@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -264,8 +265,8 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
   <div class="jsum">
     <div class="jcard clickable" onclick="editBalance()" title="Нажми чтобы обновить">
       <div class="jlabel">Остаток · сейчас ✎</div>
-      <div class="jval" style="color:var(--terracotta)" id="j_start_display">150 000 ₽</div>
-      <div class="jnote" id="j_start_note">7 июня · нажми чтобы обновить</div>
+      <div class="jval" style="color:var(--terracotta)" id="j_start_display">71 125 ₽</div>
+      <div class="jnote" id="j_start_note">15 июня · обновлено</div>
     </div>
     <div class="jcard"><div class="jlabel">Прогноз · 18 июня</div><div class="jval" id="j_pre">—</div><div class="jnote">перед второй зп</div></div>
     <div class="jcard"><div class="jlabel">Прогноз · до аренды</div><div class="jval" id="j_rent">—</div><div class="jnote">24 июня</div></div>
@@ -283,12 +284,12 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
     <div class="food-ctrl">
       <div>
         <div class="fc-lbl">🛒 Супермаркеты</div>
-        <input type="number" class="fc-inp" id="fc_grocery" value="21000" oninput="onFoodChange()">
+        <input type="number" class="fc-inp" id="fc_grocery" value="16000" oninput="onFoodChange()">
         <div class="fc-note" id="fc_g_note">= 875 ₽/день</div>
       </div>
       <div>
         <div class="fc-lbl">🍕 Кафе / рестораны</div>
-        <input type="number" class="fc-inp" id="fc_out" value="7000" oninput="onFoodChange()">
+        <input type="number" class="fc-inp" id="fc_out" value="5000" oninput="onFoodChange()">
         <div class="fc-note" style="color:var(--amber)">обычно 15–20к · урезано</div>
       </div>
       <div>
@@ -375,7 +376,7 @@ function showTab(n,b){
 }
 
 // ===== BALANCE =====
-let JSTART=150000;
+let JSTART=71125;
 function editBalance(){
   const v=prompt('Введи текущий остаток на счету (₽):',JSTART);
   if(v===null) return;
@@ -393,9 +394,14 @@ function editBalance(){
 // ===== EVENTS =====
 const DEFAULTS={
   7:  [{id:'d71',icon:'🐕',desc:'Ветеринар',       amt:-6000, cls:'exp'}],
-  8:  [{id:'d81',icon:'🛒',desc:'Зол. яблоко',     amt:-5000, cls:'exp'}],
+  8:  [{id:'d81',icon:'🛒',desc:'Зол. яблоко',     amt:-2500, cls:'exp'}],
   9:  [{id:'d91',icon:'🏋️',desc:'Спорт',           amt:-1250, cls:'sport'}],
+  10: [
+    {id:'d101',icon:'📋',desc:'Штраф',              amt:-3000, cls:'fixed'},
+    {id:'d102',icon:'📋',desc:'Налог',               amt:0,     cls:'fixed'},
+  ],
   12: [{id:'d121',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
+  14: [{id:'d141',icon:'👗',desc:'Платье −7к',       amt:-7000, cls:'exp'}],
   15: [{id:'d151',icon:'🚗',desc:'Кредит −42.5к',  amt:-42500,cls:'fixed'}],
   16: [{id:'d161',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
   17: [{id:'d171',icon:'🦷',desc:'Стоматолог',      amt:-20000,cls:'exp'}],
@@ -409,8 +415,6 @@ const DEFAULTS={
   24: [{id:'d241',icon:'💳',desc:'Кредитка −20к',  amt:-20000,cls:'fixed'}],
   25: [{id:'d251',icon:'🏠',desc:'Аренда −68к',    amt:-68000,cls:'fixed'}],
   26: [{id:'d261',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
-  27: [{id:'d271',icon:'📋',desc:'Штраф −3к',      amt:-3000, cls:'fixed'}],
-  28: [{id:'d281',icon:'📋',desc:'Налог',           amt:0,     cls:'skip'}],
   30: [{id:'d301',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
 };
 let UEV={};
@@ -688,3 +692,4 @@ initEvents(); loadFPD(); update(); renderCalendar();
 </script>
 </body>
 </html>
+
