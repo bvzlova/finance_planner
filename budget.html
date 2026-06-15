@@ -196,7 +196,7 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
 </div>
 <div class="tab-nav">
   <button class="tab-btn active" onclick="showTab('monthly',this)">Месячный план</button>
-  <button class="tab-btn" onclick="showTab('june',this)">Июнь 2025</button>
+  <button class="tab-btn" onclick="showTab('june',this)">Июнь — Июль 2026</button>
 </div>
 
 <!-- ===== MONTHLY TAB ===== -->
@@ -270,7 +270,7 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
     </div>
     <div class="jcard"><div class="jlabel">Прогноз · 18 июня</div><div class="jval" id="j_pre">—</div><div class="jnote">перед второй зп</div></div>
     <div class="jcard"><div class="jlabel">Прогноз · до аренды</div><div class="jval" id="j_rent">—</div><div class="jnote">24 июня</div></div>
-    <div class="jcard"><div class="jlabel">Прогноз · 30 июня</div><div class="jval" id="j_end">—</div><div class="jnote">конец месяца</div></div>
+    <div class="jcard"><div class="jlabel">Прогноз · 3 июля</div><div class="jval" id="j_end">—</div><div class="jnote">перед зарплатой</div></div>
   </div>
 
   <div class="card full" style="margin-bottom:20px;padding:20px 24px;">
@@ -284,12 +284,12 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
     <div class="food-ctrl">
       <div>
         <div class="fc-lbl">🛒 Супермаркеты</div>
-        <input type="number" class="fc-inp" id="fc_grocery" value="16000" oninput="onFoodChange()">
+        <input type="number" class="fc-inp" id="fc_grocery" value="21000" oninput="onFoodChange()">
         <div class="fc-note" id="fc_g_note">= 875 ₽/день</div>
       </div>
       <div>
         <div class="fc-lbl">🍕 Кафе / рестораны</div>
-        <input type="number" class="fc-inp" id="fc_out" value="5000" oninput="onFoodChange()">
+        <input type="number" class="fc-inp" id="fc_out" value="7000" oninput="onFoodChange()">
         <div class="fc-note" style="color:var(--amber)">обычно 15–20к · урезано</div>
       </div>
       <div>
@@ -317,7 +317,7 @@ input[type=range]{width:100%;accent-color:var(--terracotta);cursor:pointer;margi
   </div>
 
   <div class="cal-wrap">
-    <div class="cal-month">Июнь 2025</div>
+    <div class="cal-month">Июнь — Июль 2026</div>
     <div class="cal-head-row">
       <div class="cal-dow">Пн</div><div class="cal-dow">Вт</div><div class="cal-dow">Ср</div>
       <div class="cal-dow">Чт</div><div class="cal-dow">Пт</div>
@@ -416,6 +416,7 @@ const DEFAULTS={
   25: [{id:'d251',icon:'🏠',desc:'Аренда −68к',    amt:-68000,cls:'fixed'}],
   26: [{id:'d261',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
   30: [{id:'d301',icon:'🏋️',desc:'Спорт',          amt:-1250, cls:'sport'}],
+  33: [{id:'d331',icon:'💰',desc:'Зарплата +95к',  amt:+95000,cls:'income'}],
 };
 let UEV={};
 function initEvents(){
@@ -545,7 +546,7 @@ function renderCalendar(){
 
   const dayBal={};
   let bal=JSTART;
-  for(let d=7;d<=30;d++){
+  for(let d=16;d<=33;d++){
     (UEV[d]||[]).forEach(e=>{ if(e.cls!=='skip') bal+=e.amt; });
     bal-=getFPD(d);
     dayBal[d]=bal;
@@ -558,18 +559,17 @@ function renderCalendar(){
   }
   setCard('j_pre',dayBal[18],30000,10000);
   setCard('j_rent',dayBal[24],90000,68000);
-  setCard('j_end',dayBal[30],15000,5000);
+  setCard('j_end',dayBal[33],15000,5000);
 
   const grid=document.getElementById('cal-grid');
   grid.innerHTML='';
 
-  for(let i=0;i<6;i++){ const c=document.createElement('div'); c.className='cal-cell empty'; grid.appendChild(c); }
-
-  for(let d=1;d<=30;d++){
-    const dt=new Date(2025,5,d);
+  for(let d=1;d<=33;d++){
+    const dt=new Date(2026,5,d);
     const dow=dt.getDay();
     const isWE=dow===0||dow===6;
-    const isActive=d>=7, isToday=d===7, isSalary=d===19;
+    const isActive=d>=1, isToday=d===15, isSalary=d===19||d===33;
+    const isJuly=d>30;
 
     const cell=document.createElement('div');
     cell.className='cal-cell '+(isActive?(isSalary?'salary active':(isToday?'today active':(isWE?'weekend active':'active'))):'inactive');
@@ -580,7 +580,8 @@ function renderCalendar(){
     if(isActive){
       const ds=document.createElement('div');
       ds.className='cal-date';
-      ds.textContent=d+(isToday?' ◀':'');
+      const label=isJuly?(d-30)+' июл'+(isToday?' ◀':''):d+(isToday?' ◀':'');
+      ds.textContent=label;
       const ab=document.createElement('button');
       ab.className='cal-add-btn';
       ab.textContent='+'; ab.title='Добавить';
@@ -626,7 +627,7 @@ function renderCalendar(){
     grid.appendChild(cell);
   }
 
-  for(let i=1;i<7;i++){ const c=document.createElement('div'); c.className='cal-cell empty'; grid.appendChild(c); }
+  for(let i=0;i<2;i++){ const c=document.createElement('div'); c.className='cal-cell empty'; grid.appendChild(c); }
 }
 
 // ===== MONTHLY =====
@@ -692,4 +693,3 @@ initEvents(); loadFPD(); update(); renderCalendar();
 </script>
 </body>
 </html>
-
