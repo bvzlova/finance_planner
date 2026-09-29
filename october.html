@@ -1,0 +1,453 @@
+<title>Финансовый планер · Октябрь</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap">
+<style>
+/* Layout: тот же планер — тёмная шапка с вкладками, карточки на тёплом фоне; вкладка «План» сверху-вниз: итог → настройки → лимиты; «Календарь» — сетка месяца с остатком по дням */
+:root{
+  --bg:#F5F1EC;--card:#FFFFFF;--card-2:#FAF7F4;
+  --text:#2C231E;--text-mid:#7E706A;--text-light:#A89A93;
+  --terracotta:#8B5E52;--terra-pale:#F5EDE9;--gold:#C9A06A;
+  --border:#EAE0D8;--border-strong:#D4C5BC;
+  --green:#4F8A6C;--green-pale:#EEF5F0;--red:#B05858;--red-pale:#FBF0F0;--amber:#B9853F;--amber-pale:#FBF3E6;
+  --hdr1:#2C231E;--hdr2:#5C3E35;--hdr3:#7A5248;
+  --ev-income:#DCEBE1;--ev-fixed:#F6EBC8;--ev-exp:#DCEAF3;--ev-goal:#E6DDF2;--ev-course:#F3DCE6;--ev-skip:#EEEEEE;
+  --shadow:0 2px 12px rgba(44,35,30,.07);
+  --f-display:'Playfair Display',Georgia,serif;
+  --f-body:'Inter',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#1C1714;--card:#261F1B;--card-2:#2E2621;
+  --text:#F1E9E3;--text-mid:#B6A79F;--text-light:#8A7C75;
+  --terracotta:#D19A86;--terra-pale:#3A2B25;--gold:#D9B27E;
+  --border:#3A302A;--border-strong:#4D4038;
+  --green:#7DBE9A;--green-pale:#22302A;--red:#E08A8A;--red-pale:#3A2424;--amber:#E0B070;--amber-pale:#3A2F20;
+  --hdr1:#140F0D;--hdr2:#3A2721;--hdr3:#4E342D;
+  --ev-income:#2A4034;--ev-fixed:#4A3F22;--ev-exp:#243A4A;--ev-goal:#3A3050;--ev-course:#4A2A3A;--ev-skip:#333;
+  --shadow:0 2px 12px rgba(0,0,0,.35);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#1C1714;--card:#261F1B;--card-2:#2E2621;
+  --text:#F1E9E3;--text-mid:#B6A79F;--text-light:#8A7C75;
+  --terracotta:#D19A86;--terra-pale:#3A2B25;--gold:#D9B27E;
+  --border:#3A302A;--border-strong:#4D4038;
+  --green:#7DBE9A;--green-pale:#22302A;--red:#E08A8A;--red-pale:#3A2424;--amber:#E0B070;--amber-pale:#3A2F20;
+  --hdr1:#140F0D;--hdr2:#3A2721;--hdr3:#4E342D;
+  --ev-income:#2A4034;--ev-fixed:#4A3F22;--ev-exp:#243A4A;--ev-goal:#3A3050;--ev-course:#4A2A3A;--ev-skip:#333;
+  --shadow:0 2px 12px rgba(0,0,0,.35);color-scheme:dark}
+*{box-sizing:border-box}
+body{font-family:var(--f-body);background:var(--bg);color:var(--text);font-size:14px;margin:0}
+.num{font-variant-numeric:tabular-nums}
+.header{background:linear-gradient(150deg,var(--hdr1) 0%,var(--hdr2) 60%,var(--hdr3) 100%);padding:28px 24px 0;color:#fff}
+.header-in,.wrap{max-width:1140px;margin:0 auto}
+.header h1{font-family:var(--f-display);font-size:26px;margin:0;letter-spacing:-.3px;text-wrap:balance}
+.header p{margin:6px 0 0;color:rgba(255,255,255,.6);font-size:12px;font-weight:300}
+.tab-nav{display:flex;gap:2px;margin-top:18px;overflow-x:auto}
+.tab-btn{padding:12px 20px;font:500 13px var(--f-body);color:rgba(255,255,255,.55);border:none;background:transparent;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab-btn.active{color:#fff;border-bottom-color:var(--gold)}
+.tab-btn:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.wrap{padding-block:24px;padding-inline:16px}
+.stack{display:flex;flex-direction:column;gap:20px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;box-shadow:var(--shadow);min-width:0}
+.sec{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text-light);margin:0 0 14px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.tile{background:var(--card-2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;min-width:0}
+.tile .l{font-size:11px;color:var(--text-mid)}
+.tile .v{font-family:var(--f-display);font-size:22px;font-weight:700;margin-top:4px}
+.tile .n{font-size:11px;color:var(--text-light);margin-top:3px}
+/* verdict */
+.verdict{display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:center}
+.big{font-family:var(--f-display);font-size:52px;font-weight:700;line-height:1;color:var(--terracotta)}
+.big small{font-size:18px;color:var(--text-light);font-weight:400;font-family:var(--f-body)}
+.meter{position:relative;height:10px;background:var(--card-2);border:1px solid var(--border);border-radius:6px;margin:14px 0 6px;overflow:hidden}
+.meter i{position:absolute;inset:0 auto 0 0;border-radius:6px;background:var(--terracotta)}
+.meter-l{display:flex;justify-content:space-between;font-size:11px;color:var(--text-light)}
+.chip{display:inline-block;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.chip.ok{background:var(--green-pale);color:var(--green)}.chip.warn{background:var(--amber-pale);color:var(--amber)}.chip.bad{background:var(--red-pale);color:var(--red)}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--border)}
+.kv:last-child{border-bottom:none}.kv span:first-child{color:var(--text-mid)}.kv b{font-weight:600}
+/* controls */
+.seg{display:inline-flex;background:var(--card-2);border:1px solid var(--border);border-radius:10px;padding:3px;gap:3px}
+.seg button{border:none;background:transparent;padding:8px 14px;border-radius:8px;font:500 13px var(--f-body);color:var(--text-mid);cursor:pointer}
+.seg button.on{background:var(--card);color:var(--terracotta);box-shadow:var(--shadow)}
+.ctl{display:flex;flex-direction:column;gap:16px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
+.lbl{font-size:12px;color:var(--text-mid)}
+.inp{border:1.5px solid var(--border);border-radius:9px;padding:7px 10px;font:500 14px var(--f-body);color:var(--text);background:var(--card-2);width:110px;font-variant-numeric:tabular-nums}
+.inp.sm{width:64px}
+input[type=range]{width:100%;accent-color:var(--terracotta)}
+.note{font-size:12px;color:var(--text-mid);line-height:1.5}
+/* table */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);font-weight:600;text-align:right;padding:0 8px 10px}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px 8px;border-top:1px solid var(--border);text-align:right;white-space:nowrap}
+td .inp{width:96px;text-align:right;padding:5px 8px}
+tfoot td{font-weight:600;border-top:1.5px solid var(--border-strong)}
+.pos{color:var(--green)}.neg{color:var(--red)}.muted{color:var(--text-light)}
+.tip{margin:14px 0 0;padding:12px 14px;border-radius:10px;font-size:13px;line-height:1.5}
+.tip.ok{background:var(--green-pale)}.tip.bad{background:var(--red-pale)}.tip.warn{background:var(--amber-pale)}
+.link-btn{background:none;border:none;color:var(--text-light);font:12px var(--f-body);text-decoration:underline;cursor:pointer;padding:0}
+.link-btn:hover{color:var(--terracotta)}
+/* calendar */
+.cal-top{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.cal-wrap{overflow-x:auto}
+.cal{min-width:760px}
+.cal-head,.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-head div{font-size:10px;text-transform:uppercase;letter-spacing:.8px;color:var(--text-light);text-align:center;padding-bottom:6px}
+.cell{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:6px;min-height:128px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.cell.empty{background:transparent;border:none}
+.cell.we{background:var(--card-2)}
+.cell.pay{border-color:var(--green)}
+.cell.today{outline:2px solid var(--gold)}
+.d-row{display:flex;justify-content:space-between;align-items:center}
+.d{font-family:var(--f-display);font-weight:700;font-size:15px}
+.add{border:none;background:var(--terra-pale);color:var(--terracotta);width:20px;height:20px;border-radius:6px;cursor:pointer;font-size:14px;line-height:1}
+.evs{display:flex;flex-direction:column;gap:3px;flex:1}
+.ev{display:flex;justify-content:space-between;gap:4px;font-size:10px;padding:2px 5px;border-radius:5px;color:var(--text);align-items:center}
+.ev .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.ev .x{border:none;background:none;color:var(--text-mid);cursor:pointer;font-size:12px;padding:0 0 0 2px;line-height:1}
+.ev-income{background:var(--ev-income)}.ev-fixed{background:var(--ev-fixed)}.ev-exp{background:var(--ev-exp)}.ev-goal{background:var(--ev-goal)}.ev-course{background:var(--ev-course)}.ev-skip{background:var(--ev-skip);text-decoration:line-through}
+.life{display:flex;align-items:center;gap:4px;font-size:10px;color:var(--text-light)}
+.life input{width:100%;border:1px solid var(--border);border-radius:5px;background:var(--card-2);color:var(--text);font:10px var(--f-body);padding:2px 4px;text-align:right;font-variant-numeric:tabular-nums}
+.life input.edited{border-color:var(--gold)}
+.bal{font-family:var(--f-display);font-weight:700;font-size:12px;text-align:right;border-top:1px solid var(--border);padding-top:4px;font-variant-numeric:tabular-nums}
+.legend{display:flex;flex-wrap:wrap;gap:8px 14px;font-size:11px;color:var(--text-mid);margin-bottom:12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+/* add panel */
+.overlay{position:fixed;inset:0;background:rgba(20,15,13,.45);z-index:10}
+.panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;z-index:11;width:min(340px,calc(100vw - 32px));box-shadow:var(--shadow);display:flex;flex-direction:column;gap:12px}
+.panel h3{font-family:var(--f-display);margin:0;font-size:18px}
+.panel .inp{width:100%}
+.types{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.types button{border:1.5px solid var(--border);background:var(--card);color:var(--text-mid);border-radius:8px;padding:7px 4px;font:500 11px var(--f-body);cursor:pointer}
+.types button.on{border-color:var(--terracotta);color:var(--terracotta);background:var(--terra-pale)}
+.p-btns{display:flex;gap:8px}
+.btn{flex:1;border:none;border-radius:10px;padding:10px;font:600 14px var(--f-body);cursor:pointer;background:var(--terracotta);color:var(--card)}
+.btn.ghost{flex:0 0 auto;background:var(--card-2);color:var(--text-mid);padding:10px 16px}
+@media (max-width:820px){
+  .grid2,.verdict{grid-template-columns:1fr}
+  .tiles,.cal-top{grid-template-columns:1fr 1fr}
+  .big{font-size:42px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="header"><div class="header-in">
+  <h1>Финансовый планер</h1>
+  <p>Октябрь 2026 · прогноз по выписке за июнь–сентябрь</p>
+  <div class="tab-nav" role="tablist">
+    <button class="tab-btn active" id="tb-plan" onclick="showTab('plan')">План октября</button>
+    <button class="tab-btn" id="tb-cal" onclick="showTab('cal')">Календарь</button>
+  </div>
+</div></div>
+
+<!-- ===== PLAN ===== -->
+<div id="tab-plan" class="wrap stack">
+
+  <div class="tiles">
+    <div class="tile"><div class="l">Поступления</div><div class="v num">335 000 ₽</div><div class="n">240к · 5 окт, 95к · 20 окт</div></div>
+    <div class="tile"><div class="l">Обязательные</div><div class="v num">152 000 ₽</div><div class="n">кредит, аренда, стоматолог ×2</div></div>
+    <div class="tile"><div class="l">Курс в октябре</div><div class="v num" id="t-course">—</div><div class="n" id="t-course-n">—</div></div>
+    <div class="tile"><div class="l">В подушку</div><div class="v num" id="t-save">—</div><div class="n" id="t-save-n">—</div></div>
+  </div>
+
+  <div class="card verdict">
+    <div>
+      <p class="sec">На жизнь в октябре</p>
+      <div class="big num" id="v-day">—<small> ₽/день</small></div>
+      <div class="note" style="margin-top:8px" id="v-month">—</div>
+      <div class="meter"><i id="v-bar"></i></div>
+      <div class="meter-l"><span>0</span><span id="v-hist-l">обычно 4 377 ₽/день</span></div>
+    </div>
+    <div>
+      <div class="kv"><span>Как тратила июнь–сентябрь</span><b class="num">4 377 ₽/день</b></div>
+      <div class="kv"><span>Разница в день</span><b class="num" id="v-diff">—</b></div>
+      <div class="kv"><span>Ужаться за месяц</span><b class="num" id="v-cut">—</b></div>
+      <div class="kv"><span>Статус</span><span id="v-chip"></span></div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card ctl">
+      <p class="sec" style="margin:0">Курс по AI · 100 000 ₽</p>
+      <div class="seg" role="group" aria-label="Способ оплаты курса">
+        <button id="c-inst" onclick="setCourse('inst')">Рассрочка</button>
+        <button id="c-full" onclick="setCourse('full')">Сразу полностью</button>
+      </div>
+      <div class="row" id="inst-row">
+        <label class="lbl" for="i-pay">Платёж в месяц</label><input class="inp" id="i-pay" type="number" value="19000" oninput="recalc()">
+        <label class="lbl" for="i-n">Платежей</label><input class="inp sm" id="i-n" type="number" value="6" min="1" oninput="recalc()">
+      </div>
+      <div class="row">
+        <label class="lbl" for="i-day">День оплаты в октябре</label><input class="inp sm" id="i-day" type="number" value="5" min="1" max="31" oninput="recalc()">
+      </div>
+      <div class="note" id="c-note">—</div>
+    </div>
+
+    <div class="card ctl">
+      <p class="sec" style="margin:0">Подушка · % от поступлений</p>
+      <div class="row" style="justify-content:space-between">
+        <div class="big num" style="font-size:34px" id="s-pct">20%</div>
+        <div class="note num" id="s-sum" style="text-align:right">—</div>
+      </div>
+      <input type="range" id="s-range" min="0" max="40" step="1" value="20" oninput="recalc()" aria-label="Процент в подушку">
+      <div class="meter-l"><span>0%</span><span>цель ≥ 20%</span><span>40%</span></div>
+      <div class="note" id="s-max">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="sec">Сравнение: курс сразу или в рассрочку</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th></th><th>Рассрочка</th><th>Сразу 100к</th></tr></thead>
+      <tbody id="cmp"></tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:14px">
+      <p class="sec" style="margin:0">Лимиты на октябрь по категориям</p>
+      <button class="link-btn" onclick="resetLimits()">↺ вернуть предложенные</button>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Категория</th><th>Обычно за 31 день</th><th>Лимит октября</th><th>Срезать</th></tr></thead>
+      <tbody id="lim"></tbody>
+      <tfoot><tr><td>Итого</td><td class="num">135 700 ₽</td><td class="num" id="lim-sum">—</td><td class="num" id="lim-cut">—</td></tr></tfoot>
+    </table></div>
+    <div class="tip" id="lim-tip">—</div>
+    <p class="note" style="margin:12px 0 0">«Обычно» — траты с карты за 1 июня – 28 сентября, пересчитанные на 31 день. Без аренды, кредита, стоматолога, переводов себе и разовых покупок (билеты, Trip.com, Орматек, банкет, переводы 72к и 67к в августе).</p>
+  </div>
+</div>
+
+<!-- ===== CALENDAR ===== -->
+<div id="tab-cal" class="wrap" hidden>
+  <div class="cal-top">
+    <div class="tile">
+      <label class="l" for="start-bal">Остаток на 1 октября ✎</label>
+      <input class="inp num" id="start-bal" type="number" value="0" style="width:100%;margin-top:6px;font-size:16px" oninput="onStart()">
+      <div class="n">впиши, сколько будет на карте</div>
+    </div>
+    <div class="tile"><div class="l">4 окт · перед 240к</div><div class="v num" id="k1">—</div></div>
+    <div class="tile"><div class="l">25 окт · после аренды</div><div class="v num" id="k2">—</div></div>
+    <div class="tile"><div class="l">31 окт · конец месяца</div><div class="v num" id="k3">—</div><div class="n" id="k3n">минимум за месяц: —</div></div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between;margin-bottom:10px">
+      <div class="legend">
+        <span><i style="background:var(--ev-income)"></i>Доход</span>
+        <span><i style="background:var(--ev-fixed)"></i>Обязательно</span>
+        <span><i style="background:var(--ev-goal)"></i>Подушка</span>
+        <span><i style="background:var(--ev-course)"></i>Курс</span>
+        <span><i style="background:var(--ev-exp)"></i>Расход</span>
+      </div>
+      <div class="row">
+        <span class="note" id="life-note">—</span>
+        <button class="link-btn" onclick="resetCal()">↺ сбросить календарь</button>
+      </div>
+    </div>
+    <p class="note" style="margin:0 0 12px">Доход, подушка и курс берутся из вкладки «План». 🍽 — траты на жизнь за день, по умолчанию дневной лимит; правь по факту.</p>
+    <div class="cal-wrap"><div class="cal">
+      <div class="cal-head"><div>Пн</div><div>Вт</div><div>Ср</div><div>Чт</div><div>Пт</div><div>Сб</div><div>Вс</div></div>
+      <div class="cal-grid" id="grid"></div>
+    </div></div>
+  </div>
+</div>
+
+<div class="overlay" id="ov" hidden onclick="closePanel()"></div>
+<div class="panel" id="panel" hidden role="dialog" aria-labelledby="p-title">
+  <h3 id="p-title">Добавить</h3>
+  <div class="types" id="p-types"></div>
+  <div><label class="lbl" for="p-desc">Описание</label><input class="inp" id="p-desc" type="text" placeholder="Например: подарок"></div>
+  <div><label class="lbl" for="p-amt">Сумма, ₽</label><input class="inp" id="p-amt" type="number" min="0" placeholder="0"></div>
+  <div class="p-btns"><button class="btn" onclick="doAdd()">Добавить</button><button class="btn ghost" onclick="closePanel()">Отмена</button></div>
+</div>
+
+<script>
+const INCOME=[{day:5,amt:240000},{day:20,amt:95000}];
+const TOTAL_IN=335000, FIXED=152000, HIST_DAY=4377, DAYS=31;
+const CATS=[
+  {k:'transfers',n:'Переводы людям',avg:33400,lim:21000},
+  {k:'food',n:'Продукты',avg:28700,lim:26000},
+  {k:'beauty',n:'Красота',avg:23000,lim:11000},
+  {k:'cafe',n:'Кафе, рестораны, доставка',avg:12900,lim:7000},
+  {k:'other',n:'Прочее',avg:7600,lim:4100},
+  {k:'split',n:'Сплит / рассрочки',avg:5500,lim:5500},
+  {k:'taxi',n:'Такси и авто',avg:5100,lim:3500},
+  {k:'clothes',n:'Одежда',avg:4600,lim:0},
+  {k:'sport',n:'Спорт',avg:4300,lim:4300},
+  {k:'subs',n:'Связь и подписки',avg:4000,lim:4000},
+  {k:'dog',n:'Собака',avg:3600,lim:3600},
+  {k:'health',n:'Здоровье (прочее)',avg:3000,lim:3000},
+];
+const FIXED_EV={
+  8:[{id:'f8',desc:'🦷 Стоматолог',amt:-20000,cls:'fixed'}],
+  12:[{id:'f12',desc:'🚗 Кредит',amt:-42000,cls:'fixed'}],
+  22:[{id:'f22',desc:'🦷 Стоматолог',amt:-20000,cls:'fixed'}],
+  25:[{id:'f25',desc:'🏠 Аренда',amt:-70000,cls:'fixed'}],
+};
+const K='fp_oct26_';
+function ld(k,def){try{const v=localStorage.getItem(K+k);return v===null?def:JSON.parse(v);}catch(e){return def;}}
+function sv(k,v){try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}}
+
+let S={course:ld('course','inst'),limits:ld('limits',null),start:ld('start',0),uev:ld('uev',null),life:ld('life',{})};
+if(!S.limits){S.limits={};CATS.forEach(c=>S.limits[c.k]=c.lim);}
+if(!S.uev) S.uev=JSON.parse(JSON.stringify(FIXED_EV));
+['i-pay','i-n','i-day','s-range'].forEach(id=>{const v=ld(id,null);if(v!==null)document.getElementById(id).value=v;});
+document.getElementById('start-bal').value=S.start;
+
+const fmt=n=>(n<0?'−':'')+Math.abs(Math.round(n)).toLocaleString('ru-RU')+' ₽';
+const fk=n=>(n<0?'−':'')+(Math.abs(n)>=1000?(Math.abs(n)/1000).toFixed(Math.abs(n)%1000===0?0:1)+'к':Math.round(Math.abs(n)));
+const val=id=>parseFloat(document.getElementById(id).value)||0;
+const $=id=>document.getElementById(id);
+
+function showTab(t){
+  $('tab-plan').hidden=t!=='plan';$('tab-cal').hidden=t!=='cal';
+  $('tb-plan').classList.toggle('active',t==='plan');$('tb-cal').classList.toggle('active',t==='cal');
+  sv('tab',t);
+}
+function setCourse(m){S.course=m;sv('course',m);recalc();}
+
+function model(mode,pct){
+  const coursePay=mode==='full'?100000:val('i-pay');
+  const save=Math.round(TOTAL_IN*pct/100);
+  const life=TOTAL_IN-FIXED-coursePay-save;
+  return {coursePay,save,life,day:life/DAYS};
+}
+let M;
+function recalc(){
+  ['i-pay','i-n','i-day','s-range'].forEach(id=>sv(id,$(id).value));
+  const pct=val('s-range');
+  M=model(S.course,pct);
+  $('c-inst').classList.toggle('on',S.course==='inst');$('c-full').classList.toggle('on',S.course==='full');
+  $('inst-row').hidden=S.course!=='inst';
+  $('t-course').textContent=fmt(M.coursePay);
+  $('t-course-n').textContent=S.course==='inst'?'рассрочка, '+val('i-day')+' окт':'сразу, '+val('i-day')+' окт';
+  $('t-save').textContent=fmt(M.save);$('t-save-n').textContent=pct+'% · '+fmt(Math.round(240000*pct/100))+' + '+fmt(Math.round(95000*pct/100));
+  $('s-pct').textContent=pct+'%';
+  $('s-sum').innerHTML=fmt(M.save)+'<br><span class="muted">'+fmt(Math.round(240000*pct/100))+' с 240к · '+fmt(Math.round(95000*pct/100))+' с 95к</span>';
+
+  // verdict
+  const day=Math.round(M.day);
+  $('v-day').innerHTML=(day<0?'−':'')+Math.abs(day).toLocaleString('ru-RU')+'<small> ₽/день</small>';
+  $('v-month').textContent=fmt(M.life)+' на месяц = 335к − 152к обязательных − '+fk(M.coursePay)+' курс − '+fk(M.save)+' подушка';
+  $('v-bar').style.width=Math.max(0,Math.min(100,day/HIST_DAY*100))+'%';
+  const diff=day-HIST_DAY, cut=HIST_DAY*DAYS-M.life;
+  $('v-diff').textContent=(diff>=0?'+':'−')+Math.abs(diff).toLocaleString('ru-RU')+' ₽';
+  $('v-diff').className='num '+(diff>=0?'pos':'neg');
+  $('v-cut').textContent=cut>0?fmt(cut)+' ('+Math.round(cut/(HIST_DAY*DAYS)*100)+'%)':'не нужно';
+  const r=day/HIST_DAY;
+  $('v-chip').innerHTML=r>=1?'<span class="chip ok">живёшь как обычно</span>':r>=.8?'<span class="chip warn">ужаться до −20%</span>':r>=.6?'<span class="chip warn">ощутимо ужаться</span>':'<span class="chip bad">нереально</span>';
+
+  // course note
+  if(S.course==='inst'){
+    const tot=val('i-pay')*val('i-n'), over=tot-100000;
+    $('c-note').innerHTML='Всего заплатишь <b>'+fmt(tot)+'</b>'+(over>0?', переплата <b class="neg">'+fmt(over)+'</b>':over<0?'':' — без переплаты')+'. С ноября по '+val('i-n')+'-й месяц — ещё по '+fmt(val('i-pay'))+'.';
+  } else {
+    $('c-note').innerHTML='Без переплаты, но в октябре уходит сразу 100к — на жизнь остаётся на '+fmt(100000-val('i-pay'))+' меньше, чем в рассрочку.';
+  }
+  // max savings
+  const maxHist=TOTAL_IN-FIXED-M.coursePay-HIST_DAY*DAYS;
+  $('s-max').innerHTML=maxHist>0?'Если тратить как обычно (4 377 ₽/день), максимум в подушку <b>'+fmt(maxHist)+'</b> ('+Math.round(maxHist/TOTAL_IN*100)+'%).':'Если тратить как обычно, в подушку <b class="neg">ничего</b>: не хватает '+fmt(-maxHist)+'.';
+
+  // compare table
+  const a=model('inst',pct),b=model('full',pct);
+  const ma=TOTAL_IN-FIXED-a.coursePay-HIST_DAY*DAYS, mb=TOTAL_IN-FIXED-b.coursePay-HIST_DAY*DAYS;
+  const cell=(v,f=fmt)=>'<td class="num '+(v<0?'neg':'')+'">'+f(v)+'</td>';
+  const tot=val('i-pay')*val('i-n');
+  $('cmp').innerHTML=
+    '<tr><td>Курс в октябре</td>'+cell(a.coursePay)+cell(b.coursePay)+'</tr>'+
+    '<tr><td>В подушку ('+pct+'%)</td>'+cell(a.save)+cell(b.save)+'</tr>'+
+    '<tr><td>На жизнь за месяц</td>'+cell(a.life)+cell(b.life)+'</tr>'+
+    '<tr><td>На жизнь в день</td>'+cell(a.day,v=>fmt(v))+cell(b.day,v=>fmt(v))+'</tr>'+
+    '<tr><td>Макс. подушка при обычных тратах</td>'+cell(Math.max(ma,0))+cell(Math.max(mb,0))+'</tr>'+
+    '<tr><td>Итого за курс</td>'+cell(tot)+cell(100000)+'</tr>';
+  renderLimits();renderCal();
+}
+
+function renderLimits(){
+  let sum=0,cut=0;
+  $('lim').innerHTML=CATS.map(c=>{
+    const l=S.limits[c.k]??c.lim;sum+=l;const d=l-c.avg;cut+=d;
+    return '<tr><td>'+c.n+'</td><td class="num muted">'+fmt(c.avg)+'</td><td><input class="inp" id="lim-'+c.k+'" type="number" value="'+l+'" oninput="setLim(\''+c.k+'\',this.value)" aria-label="Лимит: '+c.n+'"></td><td class="num '+(d<0?'pos':d>0?'neg':'muted')+'">'+(d===0?'—':(d<0?'−':'+')+fmt(Math.abs(d)))+'</td></tr>';
+  }).join('');
+  $('lim-sum').textContent=fmt(sum);$('lim-cut').textContent=fmt(cut);
+  const gap=M.life-sum,tip=$('lim-tip');
+  if(gap>=0){tip.className='tip ok';tip.innerHTML='Лимиты влезают в бюджет на жизнь ('+fmt(M.life)+'). Запас <b>'+fmt(gap)+'</b>.';}
+  else{tip.className='tip bad';tip.innerHTML='Лимиты больше бюджета на жизнь ('+fmt(M.life)+') на <b>'+fmt(-gap)+'</b>. Срежь ещё или уменьши % в подушку.';}
+}
+function setLim(k,v){S.limits[k]=parseFloat(v)||0;sv('limits',S.limits);
+  // update footer & tip without re-rendering inputs (keeps focus)
+  let sum=0,cut=0;CATS.forEach(c=>{sum+=S.limits[c.k];cut+=S.limits[c.k]-c.avg;});
+  $('lim-sum').textContent=fmt(sum);$('lim-cut').textContent=fmt(cut);
+  const row=$('lim-'+k).closest('tr').lastElementChild,c=CATS.find(x=>x.k===k),d=S.limits[k]-c.avg;
+  row.className='num '+(d<0?'pos':d>0?'neg':'muted');row.textContent=d===0?'—':(d<0?'−':'+')+fmt(Math.abs(d));
+  const gap=M.life-sum,tip=$('lim-tip');
+  if(gap>=0){tip.className='tip ok';tip.innerHTML='Лимиты влезают в бюджет на жизнь ('+fmt(M.life)+'). Запас <b>'+fmt(gap)+'</b>.';}
+  else{tip.className='tip bad';tip.innerHTML='Лимиты больше бюджета на жизнь ('+fmt(M.life)+') на <b>'+fmt(-gap)+'</b>. Срежь ещё или уменьши % в подушку.';}
+}
+function resetLimits(){S.limits={};CATS.forEach(c=>S.limits[c.k]=c.lim);sv('limits',S.limits);renderLimits();}
+
+// ===== CALENDAR =====
+function autoEv(d){
+  const out=[],pct=val('s-range');
+  INCOME.forEach(i=>{if(i.day===d){
+    out.push({desc:'💰 Поступление',amt:i.amt,cls:'income'});
+    const s=Math.round(i.amt*pct/100); if(s) out.push({desc:'🛟 Подушка '+pct+'%',amt:-s,cls:'goal'});
+  }});
+  if(d===Math.round(val('i-day'))) out.push({desc:S.course==='inst'?'🎓 Курс, рассрочка':'🎓 Курс целиком',amt:-M.coursePay,cls:'course'});
+  return out;
+}
+const dayLimit=()=>Math.max(0,Math.round(M.day));
+const lifeOf=d=>S.life[d]!==undefined?S.life[d]:dayLimit();
+function onStart(){S.start=val('start-bal');sv('start',S.start);renderCal();}
+function setLife(d,v){if(v===''){delete S.life[d];}else S.life[d]=parseFloat(v)||0;sv('life',S.life);renderCal(d);}
+function delEv(d,id){S.uev[d]=(S.uev[d]||[]).filter(e=>e.id!==id);sv('uev',S.uev);renderCal();}
+function resetCal(){S.uev=JSON.parse(JSON.stringify(FIXED_EV));S.life={};sv('uev',S.uev);sv('life',S.life);renderCal();}
+
+function renderCal(focusDay){
+  $('life-note').textContent='лимит по плану: '+fmt(dayLimit())+'/день';
+  const bal={};let b=S.start,min=Infinity,minD=1;
+  for(let d=1;d<=DAYS;d++){
+    autoEv(d).concat(S.uev[d]||[]).forEach(e=>{if(e.cls!=='skip')b+=e.amt;});
+    b-=lifeOf(d);bal[d]=b;if(b<min){min=b;minD=d;}
+  }
+  const col=v=>v>=30000?'var(--green)':v>=10000?'var(--amber)':'var(--red)';
+  [['k1',4],['k2',25],['k3',31]].forEach(([id,d])=>{$(id).textContent=fmt(bal[d]);$(id).style.color=col(bal[d]);});
+  $('k3n').innerHTML='минимум: <b style="color:'+col(min)+'">'+fmt(min)+'</b> · '+minD+' окт';
+
+  const g=$('grid');g.innerHTML='';
+  const first=(new Date(2026,9,1).getDay()+6)%7;
+  for(let i=0;i<first;i++){const c=document.createElement('div');c.className='cell empty';g.appendChild(c);}
+  const now=new Date(),today=(now.getFullYear()===2026&&now.getMonth()===9)?now.getDate():0;
+  for(let d=1;d<=DAYS;d++){
+    const dow=(new Date(2026,9,d).getDay()+6)%7;
+    const c=document.createElement('div');
+    c.className='cell'+(dow>=5?' we':'')+(INCOME.some(i=>i.day===d)?' pay':'')+(d===today?' today':'');
+    let h='<div class="d-row"><span class="d">'+d+'</span><button class="add" title="Добавить" aria-label="Добавить на '+d+' октября" onclick="openPanel('+d+')">+</button></div><div class="evs">';
+    autoEv(d).forEach(e=>{h+='<div class="ev ev-'+e.cls+'" title="Из плана"><span class="nm">'+e.desc+'</span><span class="num">'+(e.amt>0?'+':'')+fk(e.amt)+'</span></div>';});
+    (S.uev[d]||[]).forEach(e=>{h+='<div class="ev ev-'+e.cls+'"><span class="nm">'+esc(e.desc)+'</span><span class="num">'+(e.amt>0?'+':'')+fk(e.amt)+'<button class="x" aria-label="Удалить" onclick="delEv('+d+',\''+e.id+'\')">×</button></span></div>';});
+    h+='</div><label class="life">🍽<input id="life-'+d+'" type="number" class="'+(S.life[d]!==undefined?'edited':'')+'" value="'+lifeOf(d)+'" onchange="setLife('+d+',this.value)" aria-label="Траты на жизнь '+d+' октября"></label>';
+    h+='<div class="bal" style="color:'+col(bal[d])+'">'+fmt(bal[d])+'</div>';
+    c.innerHTML=h;g.appendChild(c);
+  }
+  if(focusDay){const el=$('life-'+(focusDay+1));if(el)el.focus();}
+}
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+// add panel
+let P={day:1,cls:'exp'};
+const TYPES=[{c:'exp',n:'Расход'},{c:'fixed',n:'Обязательно'},{c:'income',n:'Доход'}];
+function openPanel(d){P={day:d,cls:'exp'};$('p-title').textContent='Добавить · '+d+' октября';$('p-desc').value='';$('p-amt').value='';drawTypes();$('ov').hidden=false;$('panel').hidden=false;setTimeout(()=>$('p-amt').focus(),50);}
+function drawTypes(){$('p-types').innerHTML=TYPES.map(t=>'<button class="'+(t.c===P.cls?'on':'')+'" onclick="P.cls=\''+t.c+'\';drawTypes()">'+t.n+'</button>').join('');}
+function closePanel(){$('ov').hidden=true;$('panel').hidden=true;}
+function doAdd(){const raw=val('p-amt');if(!raw){$('p-amt').focus();return;}
+  const amt=P.cls==='income'?Math.abs(raw):-Math.abs(raw);
+  (S.uev[P.day]=S.uev[P.day]||[]).push({id:'u'+Date.now(),desc:$('p-desc').value.trim()||(P.cls==='income'?'Доход':'Расход'),amt,cls:P.cls});
+  sv('uev',S.uev);closePanel();renderCal();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePanel();if(e.key==='Enter'&&!$('panel').hidden)doAdd();});
+
+recalc();
+if(ld('tab','plan')==='cal') showTab('cal');
+</script>
