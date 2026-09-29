@@ -176,13 +176,13 @@ td.desc{white-space:normal;text-align:left;min-width:160px}
 
   <div class="grid2">
     <div class="card ctl">
-      <p class="sec" style="margin:0">Курс по AI · 100 000 ₽</p>
+      <p class="sec" style="margin:0">Курс по AI · 209 000 ₽</p>
       <div class="seg" role="group" aria-label="Способ оплаты курса">
         <button id="c-inst" onclick="setCourse('inst')">Рассрочка</button>
         <button id="c-full" onclick="setCourse('full')">Сразу полностью</button>
       </div>
       <div class="row" id="inst-row">
-        <label class="lbl" for="i-pay">Платёж в месяц</label><input class="inp" id="i-pay" type="number" value="19000" oninput="recalc()">
+        <label class="lbl" for="i-pay">Платёж в месяц</label><input class="inp" id="i-pay" type="number" value="34833" oninput="recalc()">
         <label class="lbl" for="i-n">Платежей</label><input class="inp sm" id="i-n" type="number" value="6" min="1" oninput="recalc()">
       </div>
       <div class="row">
@@ -206,7 +206,7 @@ td.desc{white-space:normal;text-align:left;min-width:160px}
   <div class="card">
     <p class="sec">Сравнение: курс сразу или в рассрочку</p>
     <div class="tbl-wrap"><table>
-      <thead><tr><th></th><th>Рассрочка</th><th>Сразу 100к</th></tr></thead>
+      <thead><tr><th></th><th>Рассрочка</th><th>Сразу 209к</th></tr></thead>
       <tbody id="cmp"></tbody>
     </table></div>
   </div>
@@ -321,13 +321,13 @@ td.desc{white-space:normal;text-align:left;min-width:160px}
 const INCOME=[{day:5,amt:240000},{day:20,amt:95000}];
 const TOTAL_IN=335000, FIXED=152000, HIST_DAY=4377, DAYS=31;
 const CATS=[
-  {k:'transfers',n:'Переводы людям',avg:33400,lim:21000},
-  {k:'food',n:'Продукты',avg:28700,lim:26000},
-  {k:'beauty',n:'Красота',avg:23000,lim:11000},
-  {k:'cafe',n:'Кафе, рестораны, доставка',avg:12900,lim:7000},
-  {k:'other',n:'Прочее',avg:7600,lim:4100},
+  {k:'transfers',n:'Переводы людям',avg:33400,lim:16000},
+  {k:'food',n:'Продукты',avg:28700,lim:25000},
+  {k:'beauty',n:'Красота',avg:23000,lim:9000},
+  {k:'cafe',n:'Кафе, рестораны, доставка',avg:12900,lim:5000},
+  {k:'other',n:'Прочее',avg:7600,lim:3000},
   {k:'split',n:'Сплит / рассрочки',avg:5500,lim:5500},
-  {k:'taxi',n:'Такси и авто',avg:5100,lim:3500},
+  {k:'taxi',n:'Такси и авто',avg:5100,lim:2700},
   {k:'clothes',n:'Одежда',avg:4600,lim:0},
   {k:'sport',n:'Спорт',avg:4300,lim:4300},
   {k:'subs',n:'Связь и подписки',avg:4000,lim:4000},
@@ -340,14 +340,14 @@ const FIXED_EV={
   22:[{id:'f22',desc:'🦷 Стоматолог',amt:-20000,cls:'fixed'}],
   25:[{id:'f25',desc:'🏠 Аренда',amt:-70000,cls:'fixed'}],
 };
-const K='fp_oct26_';
+const K='fp_oct26_';const PRICE=209000;
 function ld(k,def){try{const v=localStorage.getItem(K+k);return v===null?def:JSON.parse(v);}catch(e){return def;}}
 function sv(k,v){try{localStorage.setItem(K+k,JSON.stringify(v));}catch(e){}}
 
-let S={course:ld('course','inst'),limits:ld('limits',null),start:ld('start',0),uev:ld('uev',null),life:ld('life',{})};
+let S={course:ld('course','inst'),limits:ld('limits_v2',null),start:ld('start',0),uev:ld('uev',null),life:ld('life',{})};
 if(!S.limits){S.limits={};CATS.forEach(c=>S.limits[c.k]=c.lim);}
 if(!S.uev) S.uev=JSON.parse(JSON.stringify(FIXED_EV));
-['i-pay','i-n','i-day','s-range'].forEach(id=>{const v=ld(id,null);if(v!==null)document.getElementById(id).value=v;});
+['i-pay','i-n','i-day','s-range'].forEach(id=>{const v=ld('v2_'+id,null);if(v!==null)document.getElementById(id).value=v;});
 document.getElementById('start-bal').value=S.start;
 
 const fmt=n=>(n<0?'−':'')+Math.abs(Math.round(n)).toLocaleString('ru-RU')+' ₽';
@@ -362,14 +362,14 @@ function showTab(t){
 function setCourse(m){S.course=m;sv('course',m);recalc();}
 
 function model(mode,pct){
-  const coursePay=mode==='full'?100000:val('i-pay');
+  const coursePay=mode==='full'?PRICE:val('i-pay');
   const save=Math.round(TOTAL_IN*pct/100);
   const life=TOTAL_IN-FIXED-coursePay-save;
   return {coursePay,save,life,day:life/DAYS};
 }
 let M;
 function recalc(){
-  ['i-pay','i-n','i-day','s-range'].forEach(id=>sv(id,$(id).value));
+  ['i-pay','i-n','i-day','s-range'].forEach(id=>sv('v2_'+id,$(id).value));
   const pct=val('s-range');
   M=model(S.course,pct);
   $('c-inst').classList.toggle('on',S.course==='inst');$('c-full').classList.toggle('on',S.course==='full');
@@ -394,10 +394,10 @@ function recalc(){
 
   // course note
   if(S.course==='inst'){
-    const tot=val('i-pay')*val('i-n'), over=tot-100000;
-    $('c-note').innerHTML='Всего заплатишь <b>'+fmt(tot)+'</b>'+(over>0?', переплата <b class="neg">'+fmt(over)+'</b>':over<0?'':' — без переплаты')+'. С ноября по '+val('i-n')+'-й месяц — ещё по '+fmt(val('i-pay'))+'.';
+    const tot=val('i-pay')*val('i-n'), over=Math.round(tot-PRICE);
+    $('c-note').innerHTML='Всего заплатишь <b>'+fmt(tot)+'</b>'+(over>100?', переплата <b class="neg">'+fmt(over)+'</b>':' — без переплаты')+'. Дальше ещё '+(val('i-n')-1)+' платежей по '+fmt(val('i-pay'))+'.';
   } else {
-    $('c-note').innerHTML='Без переплаты, но в октябре уходит сразу 100к — на жизнь остаётся на '+fmt(100000-val('i-pay'))+' меньше, чем в рассрочку.';
+    $('c-note').innerHTML='В октябре уходит сразу '+fmt(PRICE)+': это больше, чем остаётся после обязательных платежей ('+fmt(TOTAL_IN-FIXED)+').';
   }
   // max savings
   const maxHist=TOTAL_IN-FIXED-M.coursePay-HIST_DAY*DAYS;
@@ -414,7 +414,7 @@ function recalc(){
     '<tr><td>На жизнь за месяц</td>'+cell(a.life)+cell(b.life)+'</tr>'+
     '<tr><td>На жизнь в день</td>'+cell(a.day,v=>fmt(v))+cell(b.day,v=>fmt(v))+'</tr>'+
     '<tr><td>Макс. подушка при обычных тратах</td>'+cell(Math.max(ma,0))+cell(Math.max(mb,0))+'</tr>'+
-    '<tr><td>Итого за курс</td>'+cell(tot)+cell(100000)+'</tr>';
+    '<tr><td>Итого за курс</td>'+cell(tot)+cell(PRICE)+'</tr>';
   renderLimits();renderCal();renderFact();
 }
 
@@ -431,7 +431,7 @@ function renderLimits(){
   if(gap>=0){tip.className='tip ok';tip.innerHTML='Лимиты влезают в бюджет на жизнь ('+fmt(M.life)+'). Запас <b>'+fmt(gap)+'</b>.';}
   else{tip.className='tip bad';tip.innerHTML='Лимиты больше бюджета на жизнь ('+fmt(M.life)+') на <b>'+fmt(-gap)+'</b>. Срежь ещё или уменьши % в подушку.';}
 }
-function setLim(k,v){S.limits[k]=parseFloat(v)||0;sv('limits',S.limits);
+function setLim(k,v){S.limits[k]=parseFloat(v)||0;sv('limits_v2',S.limits);
   // update footer & tip without re-rendering inputs (keeps focus)
   let sum=0,cut=0;CATS.forEach(c=>{sum+=S.limits[c.k];cut+=S.limits[c.k]-c.avg;});
   $('lim-sum').textContent=fmt(sum);$('lim-cut').textContent=fmt(cut);
@@ -441,7 +441,7 @@ function setLim(k,v){S.limits[k]=parseFloat(v)||0;sv('limits',S.limits);
   if(gap>=0){tip.className='tip ok';tip.innerHTML='Лимиты влезают в бюджет на жизнь ('+fmt(M.life)+'). Запас <b>'+fmt(gap)+'</b>.';}
   else{tip.className='tip bad';tip.innerHTML='Лимиты больше бюджета на жизнь ('+fmt(M.life)+') на <b>'+fmt(-gap)+'</b>. Срежь ещё или уменьши % в подушку.';}
 }
-function resetLimits(){S.limits={};CATS.forEach(c=>S.limits[c.k]=c.lim);sv('limits',S.limits);renderLimits();}
+function resetLimits(){S.limits={};CATS.forEach(c=>S.limits[c.k]=c.lim);sv('limits_v2',S.limits);renderLimits();}
 
 // ===== CALENDAR =====
 function autoEv(d){
